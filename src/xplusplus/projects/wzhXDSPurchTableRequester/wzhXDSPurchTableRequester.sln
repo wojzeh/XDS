@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33920.266
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FC65038C-1B2F-41E1-A629-BED71D161FFF}") = "wzhXDSPurchTableRequester (ISV) [Fleet Management]", "wzhXDSPurchTableRequester\wzhXDSPurchTableRequester.rnrproj", "{F871635D-8263-4639-A566-1B4A8FED0548}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F871635D-8263-4639-A566-1B4A8FED0548}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F871635D-8263-4639-A566-1B4A8FED0548}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CD36A78D-3370-4BF2-BE03-F1CD49B80E2D}
+	EndGlobalSection
+EndGlobal

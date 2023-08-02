@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxForm xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>wzhSPFolderForm</Name>
+	<SourceCode>
+		<Methods xmlns="">
+			<Method>
+				<Name>classDeclaration</Name>
+				<Source><![CDATA[
+//using Microsoft.Dynamics.AX.Framework.FileManagement;
+//using Microsoft.Dynamics.AX.Framework.FileManagement.SharePointDocumentStorageProvider;
+//using Microsoft.Dynamics.Platform.Integration.SharePoint;
+using System.Net;
+using System.Net.Http;
+[Form]
+public class wzhSPFolderForm extends FormRun
+{
+    //public static void GetAuthorizationToken()
+    //{
+    //    ClientCredential cc = new
+    //    ClientCredential(AzureDetails.ClientID, AzureDetails.ClientSecret);
+    //var context = new
+    //    AuthenticationContext("https://login.microsoftonline.com/"
+    //    + AzureDetails.TenantID);
+    //    var result = context.AcquireTokenAsync("https://management.azure.com/",
+    //        cc);
+    //    if (result == null)
+    //    {
+    //        ​​
+    //            throw
+    //            new InvalidOperationException("Failed to obtain the Access token");
+    //    }
+    //    ​​
+    //       accessToken = result.Result.AccessToken;
+    //}
+    //​​
+
+
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createSPFolder</Name>
+				<Source><![CDATA[
+    public void createSPFolder()
+    {
+        System.Exception        ex;
+        str folderName = "_wzhNewFolder";
+        str sharePointSiteUrl = "https://thinkmaxconsulting1.sharepoint.com/";
+        str listTitle = "Documents";
+        str apiUrl = strFmt("%1/_api/web/lists/getbytitle('%2')/rootfolder/folders/add('%3')", sharePointSiteUrl, listTitle, folderName);
+        try
+        {
+            str token = @"e";
+
+            System.Net.WebHeaderCollection httpHeader = new System.Net.WebHeaderCollection();
+            HttpWebRequest request = System.Net.WebRequest::Create(apiUrl);
+            httpHeader.Add("Authorization", 'Bearer ' + token);
+            httpHeader.Add("Content-Type", "application/json;odata=verbose");
+
+            request.set_Headers(httpHeader);
+            request.Method = "POST";
+
+            System.Net.HttpWebResponse response = request.GetResponse();
+            int statusCode = response.get_StatusCode();
+
+            if (statusCode == 201)
+            {
+                info(strFmt("Folder '%1' created successfully.", folderName));
+            }
+            else
+            {
+                info(strFmt("Failed to create folder '%1'. HTTP status code: %2", folderName, statusCode));
+            }
+        }
+        catch
+        {
+            //exception
+            ex = CLRInterop::getLastException().GetBaseException();
+            error(ex.get_Message());
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+		<DataSources xmlns="" />
+		<DataControls xmlns="">
+			<Control>
+				<Name>OkButton</Name>
+				<Type>CommandButton</Type>
+				<Methods>
+					<Method>
+						<Name>clicked</Name>
+						<Source><![CDATA[
+        /// <summary>
+        ///
+        /// </summary>
+        public void clicked()
+        {
+            element.createSPFolder();
+            super();
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+		</DataControls>
+		<Members xmlns="" />
+	</SourceCode>
+	<DataSources />
+	<Design>
+		<Pattern xmlns="">Dialog</Pattern>
+		<PatternVersion xmlns="">1.2</PatternVersion>
+		<Style xmlns="">Dialog</Style>
+		<Controls xmlns="">
+			<AxFormControl xmlns=""
+				i:type="AxFormStaticTextControl">
+				<Name>FormStaticTextControl1</Name>
+				<ExtendedStyle>dialog_secondaryInstruction</ExtendedStyle>
+				<Type>StaticText</Type>
+				<WidthMode>SizeToAvailable</WidthMode>
+				<FormControlExtension
+					i:nil="true" />
+				<Text>Testing Sharepoint folder creation</Text>
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormGroupControl">
+				<Name>FormGroupControl1</Name>
+				<HeightMode>SizeToAvailable</HeightMode>
+				<Pattern>FillText</Pattern>
+				<PatternVersion>UX7 1.0</PatternVersion>
+				<Type>Group</Type>
+				<WidthMode>SizeToAvailable</WidthMode>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormStaticTextControl">
+						<Name>FormStaticTextControl2</Name>
+						<HeightMode>SizeToAvailable</HeightMode>
+						<Type>StaticText</Type>
+						<WidthMode>SizeToAvailable</WidthMode>
+						<FormControlExtension
+							i:nil="true" />
+						<Text>All connection info for Sharepoint server is hardoced</Text>
+					</AxFormControl>
+				</Controls>
+				<Style>DialogContent</Style>
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormButtonGroupControl">
+				<Name>FormButtonGroupControl1</Name>
+				<Type>ButtonGroup</Type>
+				<WidthMode>SizeToAvailable</WidthMode>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormCommandButtonControl">
+						<Name>OkButton</Name>
+						<Type>CommandButton</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Command>OK</Command>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormCommandButtonControl">
+						<Name>CloseButton</Name>
+						<Type>CommandButton</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Command>Cancel</Command>
+						<SaveRecord>No</SaveRecord>
+					</AxFormControl>
+				</Controls>
+				<ArrangeMethod>HorizontalRight</ArrangeMethod>
+				<Style>DialogCommitContainer</Style>
+			</AxFormControl>
+		</Controls>
+	</Design>
+	<Parts />
+</AxForm>

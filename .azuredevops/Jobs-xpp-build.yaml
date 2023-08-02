@@ -1,0 +1,64 @@
+parameters:
+  jobName: 'buildxppmodel' # Overridable name for job.
+  displayName: 'Build X++ Package' # Overridable display name for job.
+  xppModelSolution: '' # X++ model solution to build
+  metadataPath: '' # Location of X++ model metadata
+  nugetConfigsPath: '' # Location of X++ model nugets config
+  configuration: 'debug' # Build configuration
+  package: 'false' # Whether to package the model as an artifact
+
+jobs:
+- job: ${{ parameters.jobName }}
+  displayName: ${{ parameters.displayName }}
+
+  variables:
+    AppPackage: 'Microsoft.Dynamics.AX.Application.DevALM.BuildXpp'
+    AppSuitePackage: 'Microsoft.Dynamics.AX.ApplicationSuite.DevALM.BuildXpp'
+    PlatPackage: 'Microsoft.Dynamics.AX.Platform.DevALM.BuildXpp'
+    ToolsPackage: 'Microsoft.Dynamics.AX.Platform.CompilerPackage'
+    NugetsPath: '$(Pipeline.Workspace)\NuGets'
+
+  steps:
+  - task: NuGetInstaller@0
+    displayName: NuGet Install X++ Packages
+    inputs:
+      solution: ${{ parameters.nugetConfigsPath }}\packages.config
+      nugetConfigPath: ${{ parameters.nugetConfigsPath }}\nuget.config
+      restoreMode: install
+      nuGetRestoreArgs: -ExcludeVersion -OutputDirectory "$(NugetsPath)"
+
+  - task: XppUpdateModelVersion@0
+    displayName: Update Model Version
+
+  - task: VSBuild@1
+    displayName: Build X++ Model
+    inputs:
+      configuration: ${{ parameters.configuration }}
+      solution: ${{ parameters.xppModelSolution }}
+      msbuildArgs: /restore /p:BuildTasksDirectory="$(NugetsPath)\$(ToolsPackage)\DevAlm" /p:MetadataDirectory="${{ parameters.metadataPath }}" /p:FrameworkDirectory="$(NuGetsPath)\$(ToolsPackage)" /p:ReferenceFolder="$(NuGetsPath)\$(PlatPackage)\ref\net40;$(NuGetsPath)\$(AppPackage)\ref\net40;$(NuGetsPath)\$(AppSuitePackage)\ref\net40;${{ parameters.metadataPath }};$(Build.BinariesDirectory)" /p:ReferencePath="$(NuGetsPath)\$(ToolsPackage)" /p:OutputDirectory="$(Build.BinariesDirectory)"
+
+  - task: CopyFiles@2
+    displayName: 'Copy X++ Compile Log Files for Artifact Publishing'
+    inputs:
+      SourceFolder: $(Build.SourcesDirectory)
+      Contents: |
+        **\Dynamics.AX.*.xppc.*
+        **\Dynamics.AX.*.labelc.*
+        **\Dynamics.AX.*.reportsc.*
+      TargetFolder: $(Build.ArtifactStagingDirectory)\Logs\${{ parameters.configuration }}\
+    condition: and(succeeded(), eq('${{ parameters.package }}', 'true'))
+
+  - task: XppCreatePackage@0
+    displayName: Create Deployable Package
+    inputs:
+      XppToolsPath: $(NuGetsPath)\$(ToolsPackage)
+      XppBinariesPath: $(Build.BinariesDirectory)
+      XppBinariesSearch: '*'
+      DeployablePackagePath: $(Build.ArtifactStagingDirectory)\AXDeployableRuntime_$(Build.BuildNumber)-${{ parameters.configuration }}.zip
+    condition: and(succeeded(), eq('${{ parameters.package }}', 'true'))
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifacts'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    condition: and(succeeded(), eq('${{ parameters.package }}', 'true'))

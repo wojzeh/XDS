@@ -1,0 +1,42 @@
+# Name must be in #.#.#.# format for X++ tasks
+name: $(Date:yy.MM.dd)$(Rev:.r)
+
+trigger:
+- main
+
+pool:
+  name: Azure Pipelines
+  vmImage: 'windows-2022'
+  demands:s
+    - msbuild
+    - visualstudio
+
+variables:
+  MetadataPath: '$(Build.SourcesDirectory)\src\xplusplus\Models'
+  NugetConfigsPath: '$(Build.SourcesDirectory)\src\xplusplus\XppBuild'
+  XppModelSolution: 'src/xplusplus/xppBuild/<your solution name here>.sln'
+
+stages:
+
+- stage: buildxppmodel
+  displayName: 'Build XPP Model'
+  dependsOn: []
+  jobs:
+
+  - template: templates/jobs-xpp-build.yaml
+    parameters:
+      jobName: 'buildxppallmodels'
+      displayName: 'Build X++ All Models'
+      xppModelSolution: '$(XppModelSolution)'
+      metadataPath: '$(MetadataPath)'
+      nugetConfigsPath: '$(NugetConfigsPath)'
+
+  - template: templates/jobs-xpp-build.yaml
+    parameters:
+      jobName: 'buildxppdeploymentpackage'
+      displayName: 'Build X++ Deployment Package'
+      xppModelSolution: '$(XppModelSolution)'
+      metadataPath: '$(MetadataPath)'
+      nugetConfigsPath: '$(NugetConfigsPath)'
+      configuration: 'release'
+      package: 'true'

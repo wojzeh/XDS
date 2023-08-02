@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxSecurityPolicy xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>mgcXDSPurchTableRequesterPolicy</Name>
+	<ConstrainedTable>Yes</ConstrainedTable>
+	<ContextType>RoleName</ContextType>
+	<Label>Restrict access to Purchase tables for those where current user is Requester</Label>
+	<Operation>AllOperations</Operation>
+	<PrimaryTable>HCMWorker</PrimaryTable>
+	<Query>mgcXDSEmployeeCurrentUserQuery</Query>
+	<RoleName>mgcXDSPurchTableRequesterRole</RoleName>
+	<ConstrainedTables>
+		<AxSecurityPolicyConstrainedEntity xmlns=""
+			i:type="AxSecurityPolicyConstrainedTable">
+			<Constrained>Yes</Constrained>
+			<Name>PurchTable</Name>
+			<ConstrainedTables>
+				<AxSecurityPolicyConstrainedEntity xmlns=""
+					i:type="AxSecurityPolicyConstrainedTable">
+					<Constrained>Yes</Constrained>
+					<Name>VendPurchOrderJour</Name>
+					<ConstrainedTables />
+					<TableRelation>PurchTable</TableRelation>
+				</AxSecurityPolicyConstrainedEntity>
+				<AxSecurityPolicyConstrainedEntity xmlns=""
+					i:type="AxSecurityPolicyConstrainedTable">
+					<Constrained>Yes</Constrained>
+					<Name>PurchTableHistory</Name>
+					<ConstrainedTables />
+					<TableRelation>PurchTable</TableRelation>
+				</AxSecurityPolicyConstrainedEntity>
+				<AxSecurityPolicyConstrainedEntity xmlns=""
+					i:type="AxSecurityPolicyConstrainedTable">
+					<Constrained>Yes</Constrained>
+					<Name>PurchLine</Name>
+					<ConstrainedTables />
+					<TableRelation>PurchTable</TableRelation>
+				</AxSecurityPolicyConstrainedEntity>
+			</ConstrainedTables>
+			<TableRelation>Requester_FK</TableRelation>
+		</AxSecurityPolicyConstrainedEntity>
+	</ConstrainedTables>
+</AxSecurityPolicy>
